@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'job_details_page.dart';
 import 'application_process_page.dart';
 import 'success_page.dart';
@@ -6,6 +8,37 @@ import 'settings_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
+  Future<List<Map<String, dynamic>>> fetchJobListings() async {
+    final response = await http.get(
+        Uri.parse('https://thingproxy.freeboard.io/fetch/https://jobdataapi.com/api/jobs/?country_code=PH&max_age=2'),
+    );
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      // Extract the "results" array from the response
+      final List<dynamic> results = data['results'];
+
+      // Map the results to a List<Map<String, dynamic>>
+      return results.map((job) {
+        return {
+          'id': job['id'],
+          'title': job['title'],
+          'company': job['company']['name'],
+          'location': job['location'],
+          'description': job['description'],
+          'application_url': job['application_url'],
+          'logo' : job['company']['logo'],
+        };
+      }).toList();
+    } else {
+      // If the server returns an error, throw an exception
+      throw Exception('Failed to load job listings');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -183,22 +216,38 @@ class HomePage extends StatelessWidget {
 
           // Job Listings
           Expanded(
-            child: ListView.builder(
-              itemCount: 5,
-              itemBuilder: (context, index) => JobCard(
-                jobTitle: "Senior Developer ${index + 1}",
-                company: "Tech Corp ${index + 1}",
-                location: "Room & Building, Street, City",
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => JobDetailsPage(
-                      jobTitle: "Senior Developer ${index + 1}",
-                      company: "Tech Corp ${index + 1}",
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: fetchJobListings(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No job listings found.'));
+                } else {
+                  final jobListings = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: jobListings.length,
+                    itemBuilder: (context, index) => JobCard(
+                      jobTitle: jobListings[index]['title'] ?? 'No Title',
+                      company: jobListings[index]['company'] ?? 'No Company',
+                      location: jobListings[index]['location'] ?? 'No Location',
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => JobDetailsPage(
+                            jobTitle: jobListings[index]['title'] ?? 'No Title',
+                            company: jobListings[index]['company'] ?? 'No Company',
+                            location: jobListings[index]['location'] ?? 'No Location',
+                            logo: jobListings[index]['logo'] ?? "No Logo",
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
+                  );
+                }
+              },
             ),
           ),
 
