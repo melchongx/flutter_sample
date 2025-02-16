@@ -9,111 +9,103 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Settings"),
         backgroundColor: const Color(0xFF23486A),
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            const Text(
-              "Account Settings",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF23486A),
-              ),
+            // Account Settings
+            _buildSettingsCard(
+              title: "Account Settings",
+              children: [
+                _buildSettingsTile(Icons.person, "Edit Profile", () {}),
+                _buildSettingsTile(Icons.email, "Email Settings", () {}),
+              ],
             ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.person, color: Color(0xFF23486A)),
-              title: const Text("Edit Profile"),
-              onTap: () {
-                // Add functionality for editing profile
-              },
+
+            // Notifications
+            _buildSettingsCard(
+              title: "Notifications",
+              children: [
+                SwitchListTile(
+                  title: const Text("Enable Notifications"),
+                  value: true, // Change value based on user preference
+                  onChanged: (bool value) {},
+                  activeColor: const Color(0xFF23486A),
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.email, color: Color(0xFF23486A)),
-              title: const Text("Email Settings"),
-              onTap: () {
-                // Add functionality for email settings
-              },
+
+            // Privacy
+            _buildSettingsCard(
+              title: "Privacy",
+              children: [
+                _buildSettingsTile(Icons.lock, "Change Password", () {}),
+                _buildSettingsTile(Icons.visibility_off, "Two-Factor Authentication", () {}),
+              ],
             ),
-            const Divider(),
-            const Text(
-              "Notifications",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF23486A),
-              ),
+
+            // General
+            _buildSettingsCard(
+              title: "General",
+              children: [
+                _buildSettingsTile(Icons.language, "Language Settings", () {}),
+                _buildSettingsTile(Icons.dark_mode, "Theme Mode", () {}),
+              ],
             ),
-            const Divider(),
-            SwitchListTile(
-              title: const Text("Enable Notifications"),
-              value: true,  // Change value based on user preference
-              onChanged: (bool value) {
-                // Handle notification toggle
-              },
-              activeColor: Color(0xFF23486A),
-            ),
-            const Divider(),
-            const Text(
-              "Privacy",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF23486A),
-              ),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.lock, color: Color(0xFF23486A)),
-              title: const Text("Change Password"),
-              onTap: () {
-                // Add functionality for changing password
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.visibility_off, color: Color(0xFF23486A)),
-              title: const Text("Two-Factor Authentication"),
-              onTap: () {
-                // Add functionality for 2FA
-              },
-            ),
-            const Divider(),
-            const Text(
-              "General",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF23486A),
-              ),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.language, color: Color(0xFF23486A)),
-              title: const Text("Language Settings"),
-              onTap: () {
-                // Add functionality for language settings
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.dark_mode, color: Color(0xFF23486A)),
-              title: const Text("Theme Mode"),
-              onTap: () {
-                // Add functionality for theme change
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.exit_to_app, color: Color(0xFF23486A)),
-              title: const Text("Log Out"),
-              onTap: () {
-                // Add logout functionality
-              },
+
+            // Log Out
+            _buildSettingsCard(
+              title: " ",
+              children: [
+                _buildSettingsTile(Icons.exit_to_app, "Log Out", () {}),
+              ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  // Helper function to build each settings category card
+  Widget _buildSettingsCard({required String title, required List<Widget> children}) {
+    return Card(
+      color: const Color(0xFFFFF8E8), // Background color for each category
+      margin: const EdgeInsets.only(bottom: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF23486A),
+                  ),
+                ),
+              ),
+            ...children, // Insert the ListTiles/Switches inside the card
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper function to build each settings option tile
+  Widget _buildSettingsTile(IconData icon, String text, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: const Color(0xFF23486A)),
+      title: Text(text),
+      onTap: onTap,
     );
   }
 }

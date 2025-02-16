@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'job_details_page.dart';
+import 'legit_na_homepage.dart';
 import 'application_process_page.dart';
 import 'success_page.dart';
 import 'settings_page.dart';
@@ -11,7 +12,7 @@ class HomePage extends StatelessWidget {
 
   Future<List<Map<String, dynamic>>> fetchJobListings() async {
     final response = await http.get(
-        Uri.parse('https://thingproxy.freeboard.io/fetch/https://jobdataapi.com/api/jobs/?country_code=PH&max_age=2'),
+      Uri.parse('https://thingproxy.freeboard.io/fetch/https://jobdataapi.com/api/jobs/?country_code=PH&max_age=2'),
     );
 
     if (response.statusCode == 200) {
@@ -82,11 +83,25 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
+            // Home Button (Now Leads to LegitNaHomePage)
             ListTile(
               leading: const Icon(Icons.home, color: Color(0xFF23486A)),
               title: const Text('Home'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LegitNaHomePage(),
+                  ),
+                );
+              },
+            ),
+            // Look for Jobs Section
+            ListTile(
+              leading: const Icon(Icons.work, color: Color(0xFF23486A)),
+              title: const Text('Look for Jobs'),
+              onTap: () {
+                Navigator.pop(context); // Close drawer
               },
             ),
             ListTile(
@@ -113,7 +128,6 @@ class HomePage extends StatelessWidget {
                 );
               },
             ),
-
             const Divider(),
             ListTile(
               leading: const Icon(Icons.settings, color: Color(0xFF23486A)),
@@ -130,7 +144,6 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-
       body: Column(
         children: [
           // Banner Image
