@@ -42,8 +42,8 @@ class JobDetailsPage extends StatelessWidget {
                     // Column 1: Image from a link
                     Column(
                       children: [
-                        Image(
-                          'https://cors-anywhere.herokuapp.com/$logo',
+                        Image.network(
+                          'https://api.allorigins.win/raw?url=$logo',
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
@@ -65,7 +65,6 @@ class JobDetailsPage extends StatelessWidget {
                               color: Color(0xFF5B913B),
                             ),
                           ),
-                          const SizedBox(height: 5),
                           Text(
                             location,
                             style: const TextStyle(fontSize: 16),
@@ -75,9 +74,29 @@ class JobDetailsPage extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: Color(0xFF23486A),
+                      size: 36.0,
+                    ),
+                    Text(
+                      location,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF23486A),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
+          const SizedBox(height: 5),
+          Text('tite'),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
