@@ -1,19 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_sample_one/pages/signup_page.dart';
+import '../auth_service.dart';
 import 'home_page.dart';
 import 'application_process_page.dart';
+import 'login_page.dart';
 import 'success_page.dart';
 import 'settings_page.dart';
 
-class LegitNaHomePage extends StatelessWidget {
+class LegitNaHomePage extends StatefulWidget {
   const LegitNaHomePage({super.key});
+
+  @override
+  State<LegitNaHomePage> createState() => _LegitNaHomePageState();
+}
+
+class _LegitNaHomePageState extends State<LegitNaHomePage> {
+  final AuthService _authService = AuthService();
+  User? _currentUser;
+  String _username = "";
+
+  @override
+  void initState() {
+    super.initState();
+    // Set up authentication state listener
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      setState(() {
+        _currentUser = user;
+        _username = user?.displayName ?? "";
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF), // White background
+      backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppBar(
         title: const Text("JobAll"),
-        backgroundColor: const Color(0xFF23486A), // Navy Blue
+        backgroundColor: const Color(0xFF23486A),
         foregroundColor: Colors.white,
         leading: Builder(
           builder: (context) => IconButton(
@@ -27,74 +52,110 @@ class LegitNaHomePage extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(color: Color(0xFF5B913B)), // Green
+              decoration: const BoxDecoration(color: Color(0xFF5B913B)),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Color(0xFFFFFFFF), // White
-                    child: Icon(Icons.person, size: 30, color: Color(0xFF23486A)), // Navy Blue
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Color(0xFFFFFFFF),
+                        child: Icon(Icons.person, size: 30, color: Color(0xFF23486A)),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _currentUser != null
+                                  ? "Welcome Back, $_username!"
+                                  : "Welcome!",
+                              style: const TextStyle(
+                                color: Color(0xFFFFFFFF),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (_currentUser == null) ...[
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const SignUpPage()),
+                                  );
+                                },
+                                child: const Text(
+                                  "Sign up to apply →",
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontSize: 14,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Welcome Back!",
-                    style: TextStyle(
-                      color: Color(0xFFFFFFFF), // White
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Text("User Name",
-                      style: TextStyle(color: Color(0xFFFFFFFF))),
                 ],
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home, color: Color(0xFF23486A)), // Navy Blue
+              leading: Icon(
+                _currentUser != null ? Icons.logout : Icons.login,
+                color: const Color(0xFF23486A),
+              ),
+              title: Text(_currentUser != null ? 'Sign Out' : 'Log In'),
+              onTap: () {
+                Navigator.pop(context);
+                if (_currentUser != null) {
+                  _authService.signOut();
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                }
+              },
+            ),
+            if (_currentUser == null)
+              ListTile(
+                leading: const Icon(Icons.person_add, color: Color(0xFF23486A)),
+                title: const Text('Sign Up'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignUpPage()),
+                  );
+                },
+              ),
+            ListTile(
+              leading: const Icon(Icons.home, color: Color(0xFF23486A)),
               title: const Text('Home'),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const LegitNaHomePage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const LegitNaHomePage()),
                 );
               },
             ),
             ListTile(
-              leading: const Icon(Icons.work, color: Color(0xFF23486A)), // Navy Blue
+              leading: const Icon(Icons.work, color: Color(0xFF23486A)),
               title: const Text('Look for Jobs'),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.assignment, color: Color(0xFF23486A)),
-              title: const Text('Application Process'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ApplicationProcessPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.check_circle, color: Color(0xFF23486A)),
-              title: const Text('Success Page'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SuccessPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const HomePage()),
                 );
               },
             ),
@@ -103,11 +164,10 @@ class LegitNaHomePage extends StatelessWidget {
               leading: const Icon(Icons.settings, color: Color(0xFF23486A)),
               title: const Text('Settings'),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
                 );
               },
             ),
@@ -118,18 +178,18 @@ class LegitNaHomePage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // 📌 Load full image inside a scrollable view
-              Image.asset(
-                'assets/lookjob.jpg',
-                fit: BoxFit.cover,
+              SizedBox(
                 width: double.infinity,
+                height: 250,
+                child: Image.asset(
+                  'assets/lookjob.jpg',
+                  fit: BoxFit.cover,
+                ),
               ),
-
-              // ✨ Inspirational Quote
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Card(
-                  color: const Color(0xFFFFF8E8), // Cream background
+                  color: const Color(0xFFFFF8E8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -139,21 +199,19 @@ class LegitNaHomePage extends StatelessWidget {
                       "\"There is always a job for you. There is always Job for All.\"",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 44,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF23486A), // Navy Blue text
+                        color: Color(0xFF23486A),
                       ),
                     ),
                   ),
                 ),
               ),
-
-              // ✅ Start Searching Button
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 26),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF23486A), // Green
+                    backgroundColor: const Color(0xFF23486A),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                     shape: RoundedRectangleBorder(
@@ -168,16 +226,14 @@ class LegitNaHomePage extends StatelessWidget {
                   },
                   child: const Text(
                     "Start Searching",
-                    style: TextStyle(fontSize: 58),
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
               ),
-
-              // ⭐ Fake Review Section with Centered "JobAll" Text and Testimonials
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Card(
-                  color: const Color(0xFFFFF8E8), // Cream background
+                  color: const Color(0xFFFFF8E8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -190,27 +246,18 @@ class LegitNaHomePage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF23486A), // Navy Blue text
+                            color: Color(0xFF23486A),
                           ),
                         ),
                         SizedBox(height: 10),
-
-                        // 🔵 Centered "JobAll"
-                        Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                "JobAll",
-                                style: TextStyle(
-                                  fontSize: 50,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF23486A), // Navy Blue text
-                                ),
-                              ),
-                            ],
+                        Text(
+                          "JobAll",
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF23486A),
                           ),
                         ),
-
                         SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -227,17 +274,30 @@ class LegitNaHomePage extends StatelessWidget {
                           "4.7 out of 5 - Based on 10,000+ reviews",
                           style: TextStyle(
                             fontSize: 16,
-                            color: Color(0xFF23486A), // Navy Blue text
+                            color: Color(0xFF23486A),
                           ),
                         ),
-
                         SizedBox(height: 16),
-
-                        // ⭐ Reviews List
-                        ReviewCard(name: "Jimmy Gusmanos", role: "Software Engineer", review: "JobAll changed my life! Within a week, I landed my dream job."),
-                        ReviewCard(name: "Bob Builder", role: "Marketing Specialist", review: "Great platform, but I'd love to see more international jobs!"),
-                        ReviewCard(name: "Ma'am Amuh", role: "Graphic Designer", review: "Finding remote work has never been easier! Highly recommended."),
-                        ReviewCard(name: "John Patrick Gozon", role: "HR Manager", review: "We found some of our best employees through this platform!"),
+                        ReviewCard(
+                            name: "Jimmy Gusmanos",
+                            role: "Software Engineer",
+                            review: "JobAll changed my life! Within a week, I landed my dream job."
+                        ),
+                        ReviewCard(
+                            name: "Bob Builder",
+                            role: "Marketing Specialist",
+                            review: "Great platform, but I'd love to see more international jobs!"
+                        ),
+                        ReviewCard(
+                            name: "Ma'am Amuh",
+                            role: "Graphic Designer",
+                            review: "Finding remote work has never been easier! Highly recommended."
+                        ),
+                        ReviewCard(
+                            name: "John Patrick Gozon",
+                            role: "HR Manager",
+                            review: "We found some of our best employees through this platform!"
+                        ),
                       ],
                     ),
                   ),
@@ -251,7 +311,6 @@ class LegitNaHomePage extends StatelessWidget {
   }
 }
 
-// 📌 Review Card Widget with Border
 class ReviewCard extends StatelessWidget {
   final String name;
   final String role;
@@ -270,7 +329,7 @@ class ReviewCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xFF23486A), width: 2), // Navy Blue Border
+        border: Border.all(color: const Color(0xFF23486A), width: 2),
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
       ),

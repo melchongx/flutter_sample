@@ -3,13 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Sign Up
-  Future<User?> signUp(String email, String password) async {
+  // Sign Up with username
+  Future<User?> signUp(String email, String password, String username) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      // Update user's display name with username
+      await userCredential.user?.updateDisplayName(username);
       return userCredential.user;
     } catch (e) {
       print("Error: $e");
@@ -38,4 +41,7 @@ class AuthService {
 
   // Get Current User
   User? get currentUser => _auth.currentUser;
+
+  // Get username from display name
+  String? get username => currentUser?.displayName;
 }

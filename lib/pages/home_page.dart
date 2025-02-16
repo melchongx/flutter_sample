@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sample_one/pages/signup_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../auth_service.dart';
 import 'job_details_page.dart';
 import 'legit_na_homepage.dart';
 import 'application_process_page.dart';
@@ -19,16 +21,60 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentPage = 1;
   final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
-  int _totalResults = 0;
+  final AuthService _authService = AuthService();
+  User? _currentUser;
+  String _username = "";
+  List<Map<String, dynamic>> _jobListings = [];
+  List<Map<String, dynamic>> _filteredJobs = [];
+  bool _isLoading = false;
+  String _errorMessage = '';
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
+    _loadJobListings();
+    _searchController.addListener(_onSearchChanged);
+
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
       setState(() {
-        _searchQuery = _searchController.text.toLowerCase();
+        _currentUser = user;
+        _username = user?.displayName ?? "";
       });
+    });
+  }
+
+  void _onSearchChanged() {
+    _filterJobs(_searchController.text.toLowerCase());
+  }
+
+  Future<void> _loadJobListings() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      final listings = await fetchJobListings(_currentPage);
+      setState(() {
+        _jobListings = listings;
+        _filteredJobs = listings;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Failed to load job listings. Please try again.';
+      });
+    }
+  }
+
+  void _filterJobs(String query) {
+    setState(() {
+      _filteredJobs = _jobListings.where((job) {
+        final title = job['title'].toString().toLowerCase();
+        final company = job['company'].toString().toLowerCase();
+        return title.contains(query) || company.contains(query);
+      }).toList();
     });
   }
 
@@ -42,13 +88,15 @@ class _HomePageState extends State<HomePage> {
       final List<dynamic> results = data['results'];
       return results.map((job) {
         return {
-          'id': job['id'],
           'title': job['title'],
           'company': job['company']['name'],
           'location': job['location'],
-          'description': job['description'],
-          'application_url': job['application_url'],
-          'logo': job['company']['logo'],
+          'logo': job['company']['logo'] ?? '',
+          'description': job['description'] ?? '',
+          'requirements': job['requirements'],
+          'job_type': job['job_type'],
+          'posted_at': job['posted_at'],
+          'application_url': job['application_url'] ?? '',
         };
       }).toList();
     } else {
@@ -77,47 +125,92 @@ class _HomePageState extends State<HomePage> {
             DrawerHeader(
               decoration: const BoxDecoration(color: Color(0xFF5B913B)),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Color(0xFFFFFFFF),
-                    child: Icon(Icons.person, size: 30, color: Color(0xFF23486A)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const CircleAvatar(
+                        radius: 24, // Reduced from 30
+                        backgroundColor: Color(0xFFFFFFFF),
+                        child: Icon(Icons.person, size: 24, color: Color(0xFF23486A)), // Reduced size
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _currentUser != null
+                            ? "Welcome Back, $_username!"
+                            : "Welcome!",
+                        style: const TextStyle(
+                          color: Color(0xFFFFFFFF),
+                          fontSize: 16, // Reduced from 18
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Welcome Back!",
-                    style: TextStyle(
-                      color: Color(0xFFFFFFFF),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  if (_currentUser == null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Finding a job?",
+                          style: TextStyle(
+                            color: Color(0xFFFFFFFF),
+                            fontSize: 13, // Reduced from 14
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const SignUpPage()),
+                          ),
+                          child: const Text(
+                            "Sign up to apply",
+                            style: TextStyle(
+                              color: Color(0xFFFFFFFF),
+                              fontSize: 13, // Reduced from 14
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const Text("User Name",
-                      style: TextStyle(color: Color(0xFFFFFFFF))),
                 ],
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.login, color: Color(0xFF23486A)),
-              title: const Text('Login'),
+              leading: Icon(
+                _currentUser != null ? Icons.logout : Icons.login,
+                color: const Color(0xFF23486A),
+              ),
+              title: Text(_currentUser != null ? 'Sign Out' : 'Log In'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                );
+                // Close the drawer first
+                Navigator.pop(context);
+
+                if (_currentUser != null) {
+                  _authService.signOut();
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                }
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.person_add, color: Color(0xFF23486A)),
-              title: const Text('Sign Up'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignUpPage()),
-                );
-              },
-            ),
+            if (_currentUser == null) // Add this condition
+              ListTile(
+                leading: const Icon(Icons.person_add, color: Color(0xFF23486A)),
+                title: const Text('Sign Up'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignUpPage()),
+                  );
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.home, color: Color(0xFF23486A)),
               title: const Text('Home'),
@@ -135,30 +228,6 @@ class _HomePageState extends State<HomePage> {
               title: const Text('Look for Jobs'),
               onTap: () {
                 Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.assignment, color: Color(0xFF23486A)),
-              title: const Text('Application Process'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ApplicationProcessPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.check_circle, color: Color(0xFF23486A)),
-              title: const Text('Success Page'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SuccessPage(),
-                  ),
-                );
               },
             ),
             const Divider(),
@@ -238,69 +307,47 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(left: 16, top: 4, bottom: 8),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: fetchJobListings(_currentPage),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final filteredJobs = snapshot.data!.where((job) {
-                      final title = job['title'].toString().toLowerCase();
-                      final company = job['company'].toString().toLowerCase();
-                      return title.contains(_searchQuery) ||
-                          company.contains(_searchQuery);
-                    }).toList();
-                    return Text(
-                      "${filteredJobs.length} results found",
-                      style: const TextStyle(color: Colors.black54, fontSize: 14),
-                    );
-                  }
-                  return const Text(
-                    "Loading results...",
-                    style: TextStyle(color: Colors.black54, fontSize: 14),
-                  );
-                },
+              child: _isLoading
+                  ? const Text(
+                "Loading results...",
+                style: TextStyle(color: Colors.black54, fontSize: 14),
+              )
+                  : Text(
+                "${_filteredJobs.length} results found",
+                style: const TextStyle(color: Colors.black54, fontSize: 14),
               ),
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: fetchJobListings(_currentPage),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No job listings found.'));
-                } else {
-                  final jobListings = snapshot.data!;
-                  final filteredJobs = jobListings.where((job) {
-                    final title = job['title'].toString().toLowerCase();
-                    final company = job['company'].toString().toLowerCase();
-                    return title.contains(_searchQuery) ||
-                        company.contains(_searchQuery);
-                  }).toList();
-
-                  return ListView.builder(
-                    itemCount: filteredJobs.length,
-                    itemBuilder: (context, index) => JobCard(
-                      jobTitle: filteredJobs[index]['title'] ?? 'No Title',
-                      company: filteredJobs[index]['company'] ?? 'No Company',
-                      location: filteredJobs[index]['location'] ?? 'No Location',
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => JobDetailsPage(
-                            jobTitle: filteredJobs[index]['title'] ?? 'No Title',
-                            company: filteredJobs[index]['company'] ?? 'No Company',
-                            location: filteredJobs[index]['location'] ?? 'No Location',
-                            logo: filteredJobs[index]['logo'] ?? "No Logo",
-                          ),
-                        ),
-                      ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _errorMessage.isNotEmpty
+                ? Center(child: Text(_errorMessage))
+                : _filteredJobs.isEmpty
+                ? const Center(child: Text('No job listings found.'))
+                : ListView.builder(
+              itemCount: _filteredJobs.length,
+              itemBuilder: (context, index) => JobCard(
+                jobTitle: _filteredJobs[index]['title'] ?? 'No Title',
+                company: _filteredJobs[index]['company'] ?? 'No Company',
+                location: _filteredJobs[index]['location'] ?? 'No Location',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => JobDetailsPage(
+                      jobTitle: _filteredJobs[index]['title'] ?? 'No Title',
+                      company: _filteredJobs[index]['company'] ?? 'No Company',
+                      location: _filteredJobs[index]['location'] ?? 'No Location',
+                      logo: _filteredJobs[index]['logo'] ?? "",
+                      description: _filteredJobs[index]['description'] ?? 'No description available',
+                      requirements: _filteredJobs[index]['requirements'],
+                      jobType: _filteredJobs[index]['job_type'],
+                      postedAt: _filteredJobs[index]['posted_at'],
+                      applicationUrl: _filteredJobs[index]['application_url'] ?? '',
                     ),
-                  );
-                }
-              },
+                  ),
+                ),
+              ),
             ),
           ),
           Padding(
@@ -309,8 +356,11 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: _currentPage > 1
-                      ? () => setState(() => _currentPage--)
+                  onPressed: _currentPage > 1 && !_isLoading
+                      ? () {
+                    setState(() => _currentPage--);
+                    _loadJobListings();
+                  }
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFFF8E8),
@@ -329,7 +379,12 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () => setState(() => _currentPage++),
+                  onPressed: !_isLoading
+                      ? () {
+                    setState(() => _currentPage++);
+                    _loadJobListings();
+                  }
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFFF8E8),
                     foregroundColor: const Color(0xFF23486A),

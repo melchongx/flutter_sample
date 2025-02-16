@@ -18,7 +18,7 @@ class JobApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "JobSeeker Pro",
+      title: "JobAll Site",
       theme: ThemeData(
         primaryColor: const Color(0xFF23486A),
         colorScheme: ColorScheme.fromSwatch().copyWith(
