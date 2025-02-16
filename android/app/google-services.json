@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "726762192331",
+    "project_id": "joball-7199a",
+    "storage_bucket": "joball-7199a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726762192331:android:1549633085f6c090038a4e",
+        "android_client_info": {
+          "package_name": "com.example.flutter_sample_one"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAL1umYSSYXwvWNkdvAQt_LHzy-dmLZ8bw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

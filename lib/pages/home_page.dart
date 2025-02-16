@@ -1,28 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sample_one/pages/signup_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'job_details_page.dart';
 import 'legit_na_homepage.dart';
 import 'application_process_page.dart';
+import 'login_page.dart';
 import 'success_page.dart';
 import 'settings_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
-  Future<List<Map<String, dynamic>>> fetchJobListings() async {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _currentPage = 1;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  int _totalResults = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.toLowerCase();
+      });
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> fetchJobListings(int page) async {
     final response = await http.get(
       Uri.parse('https://thingproxy.freeboard.io/fetch/https://jobdataapi.com/api/jobs/?country_code=PH&max_age=2'),
     );
 
     if (response.statusCode == 200) {
-      // Parse the JSON response
       final Map<String, dynamic> data = json.decode(response.body);
-
-      // Extract the "results" array from the response
       final List<dynamic> results = data['results'];
-
-      // Map the results to a List<Map<String, dynamic>>
       return results.map((job) {
         return {
           'id': job['id'],
@@ -31,15 +48,13 @@ class HomePage extends StatelessWidget {
           'location': job['location'],
           'description': job['description'],
           'application_url': job['application_url'],
-          'logo' : job['company']['logo'],
+          'logo': job['company']['logo'],
         };
       }).toList();
     } else {
-      // If the server returns an error, throw an exception
       throw Exception('Failed to load job listings');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +98,26 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            // Home Button (Now Leads to LegitNaHomePage)
+            ListTile(
+              leading: const Icon(Icons.login, color: Color(0xFF23486A)),
+              title: const Text('Login'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.person_add, color: Color(0xFF23486A)),
+              title: const Text('Sign Up'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignUpPage()),
+                );
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.home, color: Color(0xFF23486A)),
               title: const Text('Home'),
@@ -96,12 +130,11 @@ class HomePage extends StatelessWidget {
                 );
               },
             ),
-            // Look for Jobs Section
             ListTile(
               leading: const Icon(Icons.work, color: Color(0xFF23486A)),
               title: const Text('Look for Jobs'),
               onTap: () {
-                Navigator.pop(context); // Close drawer
+                Navigator.pop(context);
               },
             ),
             ListTile(
@@ -146,18 +179,6 @@ class HomePage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Banner Image
-          // Container(
-          //   height: 150,
-          //   decoration: const BoxDecoration(
-          //     image: DecorationImage(
-          //       image: AssetImage('assets/jinx.jpg'),
-          //       fit: BoxFit.cover,
-          //     ),
-          //   ),
-          // ),
-
-          // Section Title
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
@@ -169,14 +190,13 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-
-          // Search Bar with Filter Button
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _searchController,
                     style: const TextStyle(color: Color(0xFF23486A)),
                     decoration: InputDecoration(
                       hintText: "Search for all the jobs...",
@@ -214,23 +234,36 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-
-          // "40 results found" text
-          const Padding(
-            padding: EdgeInsets.only(left: 16, top: 4, bottom: 8),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, top: 4, bottom: 8),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                "40 results found",
-                style: TextStyle(color: Colors.black54, fontSize: 14),
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchJobListings(_currentPage),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final filteredJobs = snapshot.data!.where((job) {
+                      final title = job['title'].toString().toLowerCase();
+                      final company = job['company'].toString().toLowerCase();
+                      return title.contains(_searchQuery) ||
+                          company.contains(_searchQuery);
+                    }).toList();
+                    return Text(
+                      "${filteredJobs.length} results found",
+                      style: const TextStyle(color: Colors.black54, fontSize: 14),
+                    );
+                  }
+                  return const Text(
+                    "Loading results...",
+                    style: TextStyle(color: Colors.black54, fontSize: 14),
+                  );
+                },
               ),
             ),
           ),
-
-          // Job Listings
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: fetchJobListings(),
+              future: fetchJobListings(_currentPage),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -240,20 +273,27 @@ class HomePage extends StatelessWidget {
                   return const Center(child: Text('No job listings found.'));
                 } else {
                   final jobListings = snapshot.data!;
+                  final filteredJobs = jobListings.where((job) {
+                    final title = job['title'].toString().toLowerCase();
+                    final company = job['company'].toString().toLowerCase();
+                    return title.contains(_searchQuery) ||
+                        company.contains(_searchQuery);
+                  }).toList();
+
                   return ListView.builder(
-                    itemCount: jobListings.length,
+                    itemCount: filteredJobs.length,
                     itemBuilder: (context, index) => JobCard(
-                      jobTitle: jobListings[index]['title'] ?? 'No Title',
-                      company: jobListings[index]['company'] ?? 'No Company',
-                      location: jobListings[index]['location'] ?? 'No Location',
+                      jobTitle: filteredJobs[index]['title'] ?? 'No Title',
+                      company: filteredJobs[index]['company'] ?? 'No Company',
+                      location: filteredJobs[index]['location'] ?? 'No Location',
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => JobDetailsPage(
-                            jobTitle: jobListings[index]['title'] ?? 'No Title',
-                            company: jobListings[index]['company'] ?? 'No Company',
-                            location: jobListings[index]['location'] ?? 'No Location',
-                            logo: jobListings[index]['logo'] ?? "No Logo",
+                            jobTitle: filteredJobs[index]['title'] ?? 'No Title',
+                            company: filteredJobs[index]['company'] ?? 'No Company',
+                            location: filteredJobs[index]['location'] ?? 'No Location',
+                            logo: filteredJobs[index]['logo'] ?? "No Logo",
                           ),
                         ),
                       ),
@@ -263,15 +303,15 @@ class HomePage extends StatelessWidget {
               },
             ),
           ),
-
-          // Pagination Buttons
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _currentPage > 1
+                      ? () => setState(() => _currentPage--)
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFFF8E8),
                     foregroundColor: const Color(0xFF23486A),
@@ -289,7 +329,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => setState(() => _currentPage++),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFFF8E8),
                     foregroundColor: const Color(0xFF23486A),
@@ -315,7 +355,6 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// Job Card Widget
 class JobCard extends StatelessWidget {
   final String jobTitle;
   final String company;
@@ -338,12 +377,24 @@ class JobCard extends StatelessWidget {
         height: 75,
         child: ListTile(
           leading: const Icon(Icons.work, color: Color(0xFF23486A), size: 35),
-          title: Text(jobTitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          title: Text(
+            jobTitle,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
           subtitle: Row(
             children: [
               const Icon(Icons.location_on, color: Color(0xFF23486A), size: 16),
               const SizedBox(width: 5),
-              Text(location, style: const TextStyle(fontSize: 14, color: Color(0xFF23486A))),
+              Expanded(
+                child: Text(
+                  location,
+                  style: const TextStyle(fontSize: 14, color: Color(0xFF23486A)),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
             ],
           ),
           trailing: const Icon(Icons.arrow_forward, color: Color(0xFF23486A)),
