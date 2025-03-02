@@ -30,7 +30,7 @@ class JobDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF23486A),
+        backgroundColor: const Color(0xFF28356C),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -68,19 +68,19 @@ class JobDetailsPage extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF23486A),
+                  color: Color(0xFF28356C),
                 ),
               ),
               const SizedBox(height: 15),
               Row(
                 children: [
-                  const Icon(Icons.business, color: Color(0xFF5B913B)),
+                  const Icon(Icons.business, color: Color(0xE0E35559)),
                   const SizedBox(width: 8),
                   Text(
                     company,
                     style: const TextStyle(
                       fontSize: 18,
-                      color: Color(0xFF5B913B),
+                      color: Color(0xE0E35559),
                     ),
                   ),
                 ],
@@ -88,13 +88,13 @@ class JobDetailsPage extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  const Icon(Icons.location_on, color: Color(0xFF23486A)),
+                  const Icon(Icons.location_on, color: Color(0xE0E35559)),
                   const SizedBox(width: 8),
                   Text(
                     location,
                     style: const TextStyle(
                       fontSize: 16,
-                      color: Color(0xFF23486A),
+                      color: Color(0xE0E35559),
                     ),
                   ),
                 ],
@@ -138,7 +138,7 @@ class JobDetailsPage extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF5B913B),
+                backgroundColor: const Color(0xFF28356C),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -178,7 +178,7 @@ class JobDetailsPage extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, color: const Color(0xFF23486A)),
+            Icon(icon, color: const Color(0xFF28356C)),
             const SizedBox(width: 8),
             Text(
               title,

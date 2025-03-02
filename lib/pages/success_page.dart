@@ -28,13 +28,16 @@ class SuccessPage extends StatelessWidget {
               const SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF23486A),
+                  backgroundColor: const Color(0xFF28356C),
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 ),
                 onPressed: () {
                   Navigator.popUntil(context, (route) => route.isFirst);
                 },
-                child: const Text("Back to Home"),
+                child: const Text(
+                  "Back to Home",
+                  style: TextStyle(color: Colors.white), // Set text color to white
+                ),
               ),
             ],
           ),

@@ -42,7 +42,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF8E8),
+      backgroundColor: const Color(0xFFF5F5F5),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -50,7 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.person_add, size: 100, color: Color(0xFF23486A)),
+              const Icon(Icons.person_add, size: 100, color: Color(0xFF28356C)),
               const SizedBox(height: 40),
               Card(
                 elevation: 8,
@@ -72,7 +72,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Color(0xFF5B913B)),
+                              borderSide: const BorderSide(color: Color(0xFF28356C)),
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
@@ -89,7 +89,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Color(0xFF5B913B)),
+                              borderSide: const BorderSide(color: Color(0xFF28356C)),
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
@@ -116,7 +116,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8)),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Color(0xFF5B913B)),
+                              borderSide: const BorderSide(color: Color(0xFF28356C)),
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
@@ -142,7 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8)),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Color(0xFF5B913B)),
+                              borderSide: const BorderSide(color: Color(0xFF28356C)),
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
@@ -156,17 +156,22 @@ class _SignUpPageState extends State<SignUpPage> {
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _signUp,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF5B913B),
+                              backgroundColor: const Color(0xFF28356C),
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8)),
                             ),
                             child: _isLoading
                                 ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text("SIGN UP",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold)),
+                                : const Text(
+                              "SIGN UP",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white, // Set text color to white
+                              ),
+                            ),
+
                           ),
                         ),
                       ],
@@ -183,7 +188,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     onTap: () => Navigator.pop(context),
                     child: const Text("Log In",
                         style: TextStyle(
-                            color: Color(0xFF5B913B),
+                            color: Color(0xFF28356C),
                             fontWeight: FontWeight.bold)),
                   ),
                 ],

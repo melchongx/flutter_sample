@@ -8,7 +8,7 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Settings"),
-        backgroundColor: const Color(0xFF23486A),
+        backgroundColor: const Color(0xFF28356C),
         foregroundColor: Colors.white,
       ),
       body: Padding(
@@ -32,7 +32,7 @@ class SettingsPage extends StatelessWidget {
                   title: const Text("Enable Notifications"),
                   value: true, // Change value based on user preference
                   onChanged: (bool value) {},
-                  activeColor: const Color(0xFF23486A),
+                  activeColor: const Color(0xFF28356C),
                 ),
               ],
             ),
@@ -71,7 +71,7 @@ class SettingsPage extends StatelessWidget {
   // Helper function to build each settings category card
   Widget _buildSettingsCard({required String title, required List<Widget> children}) {
     return Card(
-      color: const Color(0xFFFFF8E8), // Background color for each category
+      color: const Color(0xFFF5F5F5), // Background color for each category
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -89,7 +89,7 @@ class SettingsPage extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF23486A),
+                    color: Color(0xFF28356C),
                   ),
                 ),
               ),
@@ -103,7 +103,7 @@ class SettingsPage extends StatelessWidget {
   // Helper function to build each settings option tile
   Widget _buildSettingsTile(IconData icon, String text, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF23486A)),
+      leading: Icon(icon, color: const Color(0xFF28356C)),
       title: Text(text),
       onTap: onTap,
     );

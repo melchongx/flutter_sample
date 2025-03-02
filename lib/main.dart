@@ -20,11 +20,18 @@ class JobApp extends StatelessWidget {
     return MaterialApp(
       title: "JobAll Site",
       theme: ThemeData(
-        primaryColor: const Color(0xFF23486A),
+        primaryColor: const Color(0xFF28356C), // Updated blue shade
         colorScheme: ColorScheme.fromSwatch().copyWith(
-          secondary: const Color(0xFF5B913B),
+          secondary: const Color(0xE0E35559), // Updated slightly red (pinkish shade)
+          background: const Color(0xFFF5F5F5), // Light background color
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black, fontSize: 18),
+          titleLarge: TextStyle(color: Colors.black, fontWeight: FontWeight.bold), // Changed from blue to black
         ),
       ),
+
+
       home: const HomePage(),
     );
   }

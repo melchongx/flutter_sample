@@ -38,7 +38,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppBar(
         title: const Text("JobAll"),
-        backgroundColor: const Color(0xFF23486A),
+        backgroundColor: const Color(0xFF28356C),
         foregroundColor: Colors.white,
         leading: Builder(
           builder: (context) => IconButton(
@@ -52,7 +52,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(color: Color(0xFF5B913B)),
+              decoration: const BoxDecoration(color: Color(0xFF28356C)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +62,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
                       const CircleAvatar(
                         radius: 30,
                         backgroundColor: Color(0xFFFFFFFF),
-                        child: Icon(Icons.person, size: 30, color: Color(0xFF23486A)),
+                        child: Icon(Icons.person, size: 30, color: Color(0xFF28356C)),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -110,7 +110,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
             ListTile(
               leading: Icon(
                 _currentUser != null ? Icons.logout : Icons.login,
-                color: const Color(0xFF23486A),
+                color: const Color(0xE0E35559),
               ),
               title: Text(_currentUser != null ? 'Sign Out' : 'Log In'),
               onTap: () {
@@ -127,7 +127,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
             ),
             if (_currentUser == null)
               ListTile(
-                leading: const Icon(Icons.person_add, color: Color(0xFF23486A)),
+                leading: const Icon(Icons.person_add, color: Color(0xE0E35559)),
                 title: const Text('Sign Up'),
                 onTap: () {
                   Navigator.pop(context);
@@ -138,7 +138,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
                 },
               ),
             ListTile(
-              leading: const Icon(Icons.home, color: Color(0xFF23486A)),
+              leading: const Icon(Icons.home, color: Color(0xE0E35559)),
               title: const Text('Home'),
               onTap: () {
                 Navigator.pop(context);
@@ -149,7 +149,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.work, color: Color(0xFF23486A)),
+              leading: const Icon(Icons.work, color: Color(0xE0E35559)),
               title: const Text('Look for Jobs'),
               onTap: () {
                 Navigator.pop(context);
@@ -161,7 +161,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.settings, color: Color(0xFF23486A)),
+              leading: const Icon(Icons.settings, color: Color(0xE0E35559)),
               title: const Text('Settings'),
               onTap: () {
                 Navigator.pop(context);
@@ -189,7 +189,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Card(
-                  color: const Color(0xFFFFF8E8),
+                  color: const Color(0xFFF5F5F5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -201,7 +201,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF23486A),
+                        color: Color(0xFF28356C),
                       ),
                     ),
                   ),
@@ -211,7 +211,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
                 padding: const EdgeInsets.symmetric(vertical: 26),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF23486A),
+                    backgroundColor: const Color(0xFF28356C),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                     shape: RoundedRectangleBorder(
@@ -233,7 +233,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Card(
-                  color: const Color(0xFFFFF8E8),
+                  color: const Color(0xFFF5F5F5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -246,7 +246,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF23486A),
+                            color: Color(0xFF28356C),
                           ),
                         ),
                         SizedBox(height: 10),
@@ -255,7 +255,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
                           style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF23486A),
+                            color: Color(0xFF28356C),
                           ),
                         ),
                         SizedBox(height: 8),
@@ -274,7 +274,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
                           "4.7 out of 5 - Based on 10,000+ reviews",
                           style: TextStyle(
                             fontSize: 16,
-                            color: Color(0xFF23486A),
+                            color: Color(0xFF28356C),
                           ),
                         ),
                         SizedBox(height: 16),
@@ -329,12 +329,12 @@ class ReviewCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF23486A), width: 2),
+        border: Border.all(color: const Color(0xFF28356C), width: 2),
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
       ),
       child: ListTile(
-        leading: const Icon(Icons.person, color: Color(0xFF23486A)),
+        leading: const Icon(Icons.person, color: Color(0xFF28356C)),
         title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

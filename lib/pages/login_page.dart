@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF8E8),
+      backgroundColor: const Color(0xFFF5F5F5),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.account_circle, size: 100, color: Color(0xFF23486A)),
+              const Icon(Icons.account_circle, size: 100, color: Color(0xFF28356C)),
               const SizedBox(height: 40),
               Card(
                 elevation: 8,
@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Color(0xFF5B913B)),
+                            borderSide: const BorderSide(color: Color(0xFF28356C)),
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8)),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Color(0xFF5B913B)),
+                            borderSide: const BorderSide(color: Color(0xFF28356C)),
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
@@ -98,13 +98,20 @@ class _LoginPageState extends State<LoginPage> {
                         child: ElevatedButton(
                           onPressed: _login,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF5B913B),
+                            backgroundColor: const Color(0xFF28356C),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8)),
                           ),
-                          child: const Text("LOG IN",
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          child: const Text(
+                            "LOG IN",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white, // Set text color to white
+                            ),
+                          ),
+
                         ),
                       ),
                     ],
@@ -115,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
               TextButton(
                 onPressed: () {},
                 child: const Text("Forgot Password?",
-                    style: TextStyle(color: Color(0xFF23486A))),
+                    style: TextStyle(color: Color(0xFF28356C))),
               ),
               const SizedBox(height: 32),
               Row(
@@ -141,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: const Text("Sign Up",
                         style: TextStyle(
-                            color: Color(0xFF5B913B),
+                            color: Color(0xFF28356C),
                             fontWeight: FontWeight.bold)),
                   ),
                 ],

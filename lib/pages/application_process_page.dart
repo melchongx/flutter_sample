@@ -58,7 +58,7 @@ class _ApplicationProcessPageState extends State<ApplicationProcessPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Apply Now'),
-        backgroundColor: const Color(0xFF23486A),
+        backgroundColor: const Color(0xFF28356C),
         foregroundColor: Colors.white,
       ),
       body: Padding(
@@ -71,23 +71,23 @@ class _ApplicationProcessPageState extends State<ApplicationProcessPage> {
             const SizedBox(height: 15),
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF8E8),
+                color: const Color(0xFFF5F5F5),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF23486A).withOpacity(0.3)),
+                border: Border.all(color: const Color(0xFF28356C).withOpacity(0.3)),
               ),
               child: ListTile(
-                leading: const Icon(Icons.insert_drive_file, color: Color(0xFF23486A)),
+                leading: const Icon(Icons.insert_drive_file, color: Color(0xFF28356C)),
                 title: Text(
                   _selectedFile?.name ?? 'No file selected',
                   style: TextStyle(
                     color: _selectedFile != null
-                        ? const Color(0xFF23486A)
+                        ? const Color(0xFF28356C)
                         : Colors.grey[600],
                   ),
                 ),
                 trailing: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5B913B),
+                    backgroundColor: const Color(0xE0E35559),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -116,7 +116,7 @@ class _ApplicationProcessPageState extends State<ApplicationProcessPage> {
               maxLength: 500,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xFFFFF8E8),
+                fillColor: const Color(0xFFF5F5F5),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -136,10 +136,10 @@ class _ApplicationProcessPageState extends State<ApplicationProcessPage> {
             SizedBox(
               width: double.infinity,
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Color(0xFF5B913B)))
+                  ? const Center(child: CircularProgressIndicator(color: Color(0xFF28356C)))
                   : ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5B913B),
+                  backgroundColor: const Color(0xFF28356C),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -165,14 +165,14 @@ class _ApplicationProcessPageState extends State<ApplicationProcessPage> {
   Widget _buildSectionHeader(IconData icon, String title) {
     return Row(
       children: [
-        Icon(icon, color: const Color(0xFF23486A)),
+        Icon(icon, color: const Color(0xFF28356C)),
         const SizedBox(width: 12),
         Text(
           title,
           style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF23486A)),
+              color: Color(0xFF28356C)),
         ),
       ],
     );
