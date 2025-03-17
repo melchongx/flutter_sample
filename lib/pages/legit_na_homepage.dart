@@ -278,26 +278,7 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
                           ),
                         ),
                         SizedBox(height: 16),
-                        ReviewCard(
-                            name: "Jimmy Gusmanos",
-                            role: "Software Engineer",
-                            review: "JobAll changed my life! Within a week, I landed my dream job."
-                        ),
-                        ReviewCard(
-                            name: "Bob Builder",
-                            role: "Marketing Specialist",
-                            review: "Great platform, but I'd love to see more international jobs!"
-                        ),
-                        ReviewCard(
-                            name: "Ma'am Amuh",
-                            role: "Graphic Designer",
-                            review: "Finding remote work has never been easier! Highly recommended."
-                        ),
-                        ReviewCard(
-                            name: "John Patrick Gozon",
-                            role: "HR Manager",
-                            review: "We found some of our best employees through this platform!"
-                        ),
+                        CommentBox(),
                       ],
                     ),
                   ),
@@ -310,37 +291,184 @@ class _LegitNaHomePageState extends State<LegitNaHomePage> {
     );
   }
 }
+class Comment {
+  String name;
+  String role;
+  String review;
 
-class ReviewCard extends StatelessWidget {
-  final String name;
-  final String role;
-  final String review;
+  Comment({required this.name, required this.role, required this.review});
+}
 
-  const ReviewCard({
-    super.key,
-    required this.name,
-    required this.role,
-    required this.review,
-  });
+class CommentBox extends StatefulWidget {
+  const CommentBox({Key? key}) : super(key: key);
+
+  @override
+  _CommentBoxState createState() => _CommentBoxState();
+}
+
+class _CommentBoxState extends State<CommentBox> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _roleController = TextEditingController();
+  final TextEditingController _reviewController = TextEditingController();
+
+  final List<Comment> _comments = []; // List to store submitted comments
+
+  void _submitComment() {
+    String name = _nameController.text.trim();
+    String role = _roleController.text.trim();
+    String review = _reviewController.text.trim();
+
+    if (name.isNotEmpty && role.isNotEmpty && review.isNotEmpty) {
+      setState(() {
+        _comments.insert(0, Comment(name: name, role: role, review: review));
+      });
+
+      _nameController.clear();
+      _roleController.clear();
+      _reviewController.clear();
+    }
+  }
+
+  void _editComment(int index) {
+    _nameController.text = _comments[index].name;
+    _roleController.text = _comments[index].role;
+    _reviewController.text = _comments[index].review;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Edit Review"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Your Name'),
+              ),
+              TextField(
+                controller: _roleController,
+                decoration: const InputDecoration(labelText: 'Your Role'),
+              ),
+              TextField(
+                controller: _reviewController,
+                decoration: const InputDecoration(labelText: 'Your Review'),
+                maxLines: 3,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _comments[index].name = _nameController.text;
+                  _comments[index].role = _roleController.text;
+                  _comments[index].review = _reviewController.text;
+                });
+                Navigator.pop(context);
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteComment(int index) {
+    setState(() {
+      _comments.removeAt(index);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF28356C), width: 2),
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
-      ),
-      child: ListTile(
-        leading: const Icon(Icons.person, color: Color(0xFF28356C)),
-        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
+    return Column(
+      children: [
+        TextField(
+          controller: _nameController,
+          decoration: const InputDecoration(labelText: 'Your Name'),
+        ),
+        TextField(
+          controller: _roleController,
+          decoration: const InputDecoration(labelText: 'Your Role'),
+        ),
+        TextField(
+          controller: _reviewController,
+          decoration: const InputDecoration(labelText: 'Your Review'),
+          maxLines: 3,
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: _submitComment,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF28356C),
+            foregroundColor: Colors.white,
+          ),
+          child: const Text('Submit Review'),
+        ),
+        const SizedBox(height: 20),
+        Column(
+          children: List.generate(_comments.length, (index) {
+            return ReviewCard(
+              comment: _comments[index],
+              onEdit: () => _editComment(index),
+              onDelete: () => _deleteComment(index),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+}
+
+class ReviewCard extends StatelessWidget {
+  final Comment comment;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const ReviewCard({Key? key, required this.comment, required this.onEdit, required this.onDelete}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+      child: Container(
+        width: double.infinity, // Ensures it takes full width
+        padding: const EdgeInsets.all(12),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(role, style: const TextStyle(fontSize: 14, color: Colors.black54)),
-            Text('"$review"', style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic)),
+            Text(
+              comment.name,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              comment.role,
+              style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+            ),
+            const SizedBox(height: 6),
+            Text(comment.review),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: onEdit,
+                  icon: const Icon(Icons.edit, color: Colors.blue),
+                ),
+                IconButton(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                ),
+              ],
+            ),
           ],
         ),
       ),
